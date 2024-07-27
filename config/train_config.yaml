@@ -3,9 +3,9 @@ cuda_devices: '0,1'   # multi-gpu training is available
 
 # dataset
 dataset:
-  data_root: 'dataset/ModelNet40_processed'
+  data_root: '/content/content/simplified_data'
   max_faces: 500
-  augment_data: true
+  augment_data: False
   jitter_sigma: 0.01
   jitter_clip: 0.05
 
