@@ -32,7 +32,7 @@ data_set = {
     x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
 }
 data_loader = {
-    x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], num_workers=4, shuffle=True, pin_memory=False)
+    x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], shuffle=True)
     for x in ['train', 'test']
 }
 
