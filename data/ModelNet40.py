@@ -6,7 +6,7 @@ import pymeshlab
 from data.preprocess import find_neighbor
 
 type_to_index_map = {
-    'Infeasible_Design': 0, 'Feasible_Design': 1}
+    'Infeasible_Designs': 0, 'Feasible_Designs': 1}
 
 
 class ModelNet40(data.Dataset):
