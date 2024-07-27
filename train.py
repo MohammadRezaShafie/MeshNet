@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     # prepare model
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
-    model.cuda()
+    # model.cuda()
     model = nn.DataParallel(model)
 
     # criterion
