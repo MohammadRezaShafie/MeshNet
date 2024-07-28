@@ -30,6 +30,11 @@ def test_model(model):
             normals = normals.cuda()
             neighbor_index = neighbor_index.cuda()
             targets = targets.cuda()
+            # centers = centers
+            # corners = corners
+            # normals = normals
+            # neighbor_index = neighbor_index
+            # targets = targets
 
             outputs, feas = model(centers, corners, normals, neighbor_index)
             _, preds = torch.max(outputs, 1)
@@ -50,6 +55,7 @@ if __name__ == '__main__':
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
     model.cuda()
     model = nn.DataParallel(model)
+    # model.load_state_dict(torch.load(cfg['load_model'],map_location=torch.device('cpu')))
     model.load_state_dict(torch.load(cfg['load_model']))
     model.eval()
 

@@ -25,10 +25,11 @@ class ModelNet40(data.Dataset):
             if type not in type_to_index_map.keys():
                 continue
             type_index = type_to_index_map[type]
-            type_root = os.path.join((self.root, type))
+            type_root = os.path.join(self.root, type)
             for filename in os.listdir(type_root):
                 if filename.endswith('.npz') or filename.endswith('.obj'):
                     self.data.append((os.path.join(type_root, filename), type_index))
+
 
     def __getitem__(self, i):
         path, type = self.data[i]
@@ -91,7 +92,7 @@ def process_mesh(path, max_faces):
     vertices = mesh.vertex_matrix()
     faces = mesh.face_matrix()
 
-    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
