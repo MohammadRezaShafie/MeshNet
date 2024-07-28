@@ -77,6 +77,8 @@ class ModelNet40(data.Dataset):
 
 
 def process_mesh(path, max_faces):
+
+    print(path)
     ms = pymeshlab.MeshSet()
     ms.clear()
 
@@ -137,7 +139,11 @@ def process_mesh(path, max_faces):
 
     centers = np.array(centers)
     corners = np.array(corners)
+    print(f"centers shape: {centers.shape}")
+    print(f"corners shape: {corners.shape}")
+    print(f"face_normal shape: {face_normal.shape}")
     faces = np.concatenate([centers, corners, face_normal], axis=1)
+    print(f"faces: {faces.shape}")
     neighbors = np.array(neighbors)
 
     return faces, neighbors
