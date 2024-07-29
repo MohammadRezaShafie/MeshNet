@@ -38,9 +38,11 @@ def test_model(model):
 
             outputs, feas = model(centers, corners, normals, neighbor_index)
             _, preds = torch.max(outputs, 1)
-
+            print(torch.max(outputs, 1))
+            
             correct_num += (preds == targets).float().sum()
-
+            print(correct_num)
+            print()
             if cfg['retrieval_on']:
                 ft_all = append_feature(ft_all, feas.detach().cpu())
                 lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
