@@ -15,10 +15,10 @@ def find_neighbor(faces, faces_contain_this_vertex, vf1, vf2, except_face):
     return except_face
 
 if __name__ == '__main__':
-    root = Path('dataset/Manifold40')
-    new_root = Path('dataset/ModelNet40_processed')
-    max_faces = 500
-    shape_list = sorted(list(root.glob('*/*/*.obj')))
+    root = Path('/content/content/simplified_data/Infeasible_Designs')
+    new_root = Path('/content/content/simplified_data_npz/Infeasible_Designs')
+    max_faces = 10000
+    shape_list = sorted(list(root.glob('*.obj')))
     ms = pymeshlab.MeshSet()
 
     for shape_dir in track(shape_list):
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         vertices = mesh.vertex_matrix()
         faces = mesh.face_matrix()
 
-        if faces.shape[0] != max_faces:
+        if faces.shape[0] >= max_faces:
             print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], out_dir))
             continue
 
