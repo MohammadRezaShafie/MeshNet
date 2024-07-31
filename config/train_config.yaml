@@ -4,7 +4,7 @@ cuda_devices: '0,1'   # multi-gpu training is available
 # dataset
 dataset:
   data_root: '/content/content/simplified_data'
-  max_faces: 500
+  max_faces: 10000
   augment_data: False
   jitter_sigma: 0.01
   jitter_clip: 0.05
@@ -28,7 +28,7 @@ seed: 0
 lr: 0.0006
 momentum: 0.9
 weight_decay: 0.0005
-batch_size: 128
+batch_size: 2
 max_epoch: 250
 optimizer: 'adamw' # sgd/adamw
 scheduler: 'cos' # step/cos
