@@ -68,6 +68,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 neighbor_index = neighbor_index.cuda()
                 targets = targets.cuda()
 
+                targets = targets.view(-1, 1)
+
                 with torch.set_grad_enabled(phrase == 'train'):
                     outputs, feas = model(centers, corners, normals, neighbor_index)
                     _, preds = torch.max(outputs, 1)
