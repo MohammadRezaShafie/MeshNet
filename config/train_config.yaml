@@ -29,7 +29,7 @@ lr: 0.006
 momentum: 0.9
 weight_decay: 0.0005
 batch_size: 16
-max_epoch: 10
+max_epoch: 250
 optimizer: 'adamw' # sgd/adamw
 scheduler: 'cos' # step/cos
 milestones: [30, 60, 90]
