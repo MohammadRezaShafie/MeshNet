@@ -71,12 +71,13 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 with torch.set_grad_enabled(phrase == 'train'):
                     outputs, feas = model(centers, corners, normals, neighbor_index)
                     _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, targets)
+                    
                     print("Outputs:", outputs)
                     print("Targets:", targets)
                     print("Predictions:", preds)
+                    loss = criterion(outputs, targets)
                     print("Loss:", loss.item())
-
+                    
                     if phrase == 'train':
                         optimizer.zero_grad()
                         loss.backward()
