@@ -75,11 +75,11 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                     _, preds = torch.max(outputs, 1)
 
                     preds = (torch.sigmoid(outputs) > 0.5).float()
-                    print("Outputs:", outputs)
-                    print("Targets:", targets)
-                    print("Predictions:", preds)
+                    # print("Outputs:", outputs)
+                    # print("Targets:", targets)
+                    # print("Predictions:", preds)
                     loss = criterion(outputs, targets)
-                    print("Loss:", loss.item())
+                    # print("Loss:", loss.item())
                     
                     if phrase == 'train':
                         optimizer.zero_grad()
