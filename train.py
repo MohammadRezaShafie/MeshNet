@@ -75,11 +75,11 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                     _, preds = torch.max(outputs, 1)
 
                     preds = (torch.sigmoid(outputs) > 0.5).float()
-                    # print("Outputs:", outputs)
-                    # print("Targets:", targets)
-                    # print("Predictions:", preds)
+                    print("Outputs:", outputs)
+                    print("Targets:", targets)
+                    print("Predictions:", preds)
                     loss = criterion(outputs, targets)
-                    # print("Loss:", loss.item())
+                    print("Loss:", loss.item())
                     
                     if phrase == 'train':
                         optimizer.zero_grad()
@@ -90,20 +90,21 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                         ft_all = append_feature(ft_all, feas.detach().cpu())
                         lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
 
+                    print(f'{centers.size(0)=}')
                     running_loss += loss.item() * centers.size(0)
                     running_corrects += torch.sum(preds == targets.data)
 
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
-            print(epoch_acc)
+            print('in train phase {}'.format(epoch_acc))
 
             if phrase == 'train':
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(phrase, epoch_loss, epoch_acc))
                 scheduler.step()
 
             if phrase == 'test':
-                print(best_acc)
-                print(epoch_acc)
+                print('in train phase {}'.format(best_acc))
+                print('in test phase {}'.format(epoch_acc))
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
