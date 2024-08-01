@@ -95,6 +95,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
+            print(epoch_acc)
 
             if phrase == 'train':
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(phrase, epoch_loss, epoch_acc))
