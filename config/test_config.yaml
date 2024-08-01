@@ -5,7 +5,7 @@ cuda_devices: '0'
 dataset:
   data_root: '/content/content/simplified_data_voxel_size_4'
   augment_data: false
-  max_faces: 500
+  max_faces: 8300
 
 # model
 load_model: '/content/drive/MyDrive/MeshNet_weights.pkl'
@@ -19,7 +19,7 @@ MeshNet:
     aggregation_method: 'Concat'  # Concat/Max/Average
   mask_ratio: 0.95
   dropout: 0.5
-  num_classes: 40
+  num_classes: 2
 
 # test config
 batch_size: 128
