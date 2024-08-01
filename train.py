@@ -101,6 +101,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 scheduler.step()
 
             if phrase == 'test':
+                print(best_acc)
+                print(epoch_acc)
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
