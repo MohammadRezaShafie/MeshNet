@@ -90,7 +90,6 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                         ft_all = append_feature(ft_all, feas.detach().cpu())
                         lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
 
-                    print(f'{centers.size(0)=}')
                     running_loss += loss.item() * centers.size(0)
                     running_corrects += torch.sum(preds == targets.data)
 
