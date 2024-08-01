@@ -3,7 +3,7 @@ cuda_devices: '0,1'   # multi-gpu training is available
 
 # dataset
 dataset:
-  data_root: '/content/content/simplified_data'
+  data_root: '/content/simplified_data_voxel_size_10_npz'
   max_faces: 10000
   augment_data: False
   jitter_sigma: 0.01
