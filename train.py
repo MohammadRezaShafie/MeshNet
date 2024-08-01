@@ -95,15 +95,15 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
-            print('in train phase {}'.format(epoch_acc))
+            # print('in train phase {}'.format(epoch_acc))
 
             if phrase == 'train':
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(phrase, epoch_loss, epoch_acc))
                 scheduler.step()
 
             if phrase == 'test':
-                print('in train phase {}'.format(best_acc))
-                print('in test phase {}'.format(epoch_acc))
+                # print('in train phase {}'.format(best_acc))
+                # print('in test phase {}'.format(epoch_acc))
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
