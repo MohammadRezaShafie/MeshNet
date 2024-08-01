@@ -31,7 +31,7 @@ class MeshNet(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(),
             nn.Dropout(p=cfg['dropout']),
-            nn.Linear(256, cfg['num_classes'])
+            nn.Linear(256, 1)
         )
 
     def forward(self, centers, corners, normals, neighbor_index):
