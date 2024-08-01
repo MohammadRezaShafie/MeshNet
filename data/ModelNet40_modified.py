@@ -25,10 +25,11 @@ class ModelNet40(data.Dataset):
             if type not in type_to_index_map.keys():
                 continue
             type_index = type_to_index_map[type]
-            type_root = os.path.join(os.path.join(self.root, type), part)
+            type_root = os.path.join(self.root, type)
             for filename in os.listdir(type_root):
                 if filename.endswith('.npz') or filename.endswith('.obj'):
                     self.data.append((os.path.join(type_root, filename), type_index))
+
 
     def __getitem__(self, i):
         path, type = self.data[i]
@@ -76,6 +77,8 @@ class ModelNet40(data.Dataset):
 
 
 def process_mesh(path, max_faces):
+
+    print(path)
     ms = pymeshlab.MeshSet()
     ms.clear()
 
@@ -91,7 +94,7 @@ def process_mesh(path, max_faces):
     vertices = mesh.vertex_matrix()
     faces = mesh.face_matrix()
 
-    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
@@ -136,7 +139,11 @@ def process_mesh(path, max_faces):
 
     centers = np.array(centers)
     corners = np.array(corners)
+    print(f"centers shape: {centers.shape}")
+    print(f"corners shape: {corners.shape}")
+    print(f"face_normal shape: {face_normal.shape}")
     faces = np.concatenate([centers, corners, face_normal], axis=1)
+    print(f"faces: {faces.shape}")
     neighbors = np.array(neighbors)
 
     return faces, neighbors
