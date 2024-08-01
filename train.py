@@ -74,7 +74,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                     outputs, feas = model(centers, corners, normals, neighbor_index)
                     _, preds = torch.max(outputs, 1)
 
-                    
+                    preds = (torch.sigmoid(outputs) > 0.5).float()
                     # print("Outputs:", outputs)
                     # print("Targets:", targets)
                     # print("Predictions:", preds)
