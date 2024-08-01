@@ -12,7 +12,7 @@ def _check_dir(dir, make_dir=True):
             raise Exception('Directory not exist: {}'.format(dir))
 
 
-def get_train_config(config_file='/content/MeshNet/config/train_config.yaml'):
+def get_train_config(config_file='/kaggle/working/MeshNet/config/train_config.yaml'):
     with open(config_file, 'r') as f:
         cfg = yaml.load(f, Loader=yaml.loader.SafeLoader)
 
@@ -22,7 +22,7 @@ def get_train_config(config_file='/content/MeshNet/config/train_config.yaml'):
     return cfg
 
 
-def get_test_config(config_file='/content/MeshNet/config/test_config.yaml'):
+def get_test_config(config_file='/kaggle/working/MeshNet/config/test_config.yaml'):
     with open(config_file, 'r') as f:
         cfg = yaml.load(f, Loader=yaml.loader.SafeLoader)
 
