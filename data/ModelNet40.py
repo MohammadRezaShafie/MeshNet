@@ -31,6 +31,7 @@ class ModelNet40(data.Dataset):
                     self.data.append((os.path.join(type_root, filename), type_index))
 
     def __getitem__(self, i):
+        print(self.data[i])
         path, type = self.data[i]
         if path.endswith('.npz'):
             data = np.load(path)
