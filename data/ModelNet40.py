@@ -63,7 +63,7 @@ class ModelNet40(data.Dataset):
         # to tensor
         face = torch.from_numpy(face).float()
         neighbor_index = torch.from_numpy(neighbor_index).long()
-        target = torch.tensor(type, dtype=torch.long)
+        target = torch.tensor(type, dtype=torch.float)
 
         # reorganize
         face = face.permute(1, 0).contiguous()
