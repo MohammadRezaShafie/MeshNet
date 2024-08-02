@@ -22,5 +22,5 @@ MeshNet:
   num_classes: 2
 
 # test config
-batch_size: 128
+batch_size: 64
 retrieval_on: true
