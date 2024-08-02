@@ -10,7 +10,7 @@ import torch.backends.cudnn as cudnn
 import math
 import numpy as np
 from config import get_train_config
-from data import ModelNet40
+from data import ModelNet40_modified
 from models import MeshNet
 from utils.retrival import append_feature, calculate_map
 
