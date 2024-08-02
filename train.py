@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # criterion = nn.BCEWithLogitsLoss()
     neg_weight = 0.6
     pos_weight = 0.4
-    class_weights = torch.tensor([neg_weight, pos_weight]).cuda()
+    class_weights = torch.tensor([pos_weight]).cuda()
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights)
 
     # optimizer
