@@ -4,14 +4,14 @@ import torch
 import torch.utils.data as data
 import pymeshlab
 from data.preprocess import find_neighbor
+from sklearn.model_selection import train_test_split
 
 type_to_index_map = {
     'Infeasible_Designs': 0, 'Feasible_Designs': 1}
 
-
 class ModelNet40(data.Dataset):
 
-    def __init__(self, cfg, part='train'):
+    def __init__(self, cfg, part='train', split_ratio=0.8):
         self.root = cfg['data_root']
         self.max_faces = cfg['max_faces']
         self.part = part
@@ -25,10 +25,17 @@ class ModelNet40(data.Dataset):
             if type not in type_to_index_map.keys():
                 continue
             type_index = type_to_index_map[type]
-            type_root = os.path.join(os.path.join(self.root, type), part)
+            type_root = os.path.join(self.root, type)
             for filename in os.listdir(type_root):
                 if filename.endswith('.npz') or filename.endswith('.stl'):
                     self.data.append((os.path.join(type_root, filename), type_index))
+
+        train_data, test_data = train_test_split(self.data, test_size=(1 - split_ratio), stratify=[d[1] for d in self.data])
+
+        if self.part == 'train':
+            self.data = train_data
+        else:
+            self.data = test_data
 
     def __getitem__(self, i):
         path, type = self.data[i]
@@ -74,7 +81,6 @@ class ModelNet40(data.Dataset):
     def __len__(self):
         return len(self.data)
 
-
 def process_mesh(path, max_faces):
     ms = pymeshlab.MeshSet()
     ms.clear()
@@ -82,10 +88,6 @@ def process_mesh(path, max_faces):
     # load mesh
     ms.load_new_mesh(path)
     mesh = ms.current_mesh()
-    
-    # # clean up
-    # mesh, _ = pymesh.remove_isolated_vertices(mesh)
-    # mesh, _ = pymesh.remove_duplicated_vertices(mesh)
 
     # get elements
     vertices = mesh.vertex_matrix()
