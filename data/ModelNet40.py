@@ -91,7 +91,7 @@ def process_mesh(path, max_faces):
     vertices = mesh.vertex_matrix()
     faces = mesh.face_matrix()
 
-    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
