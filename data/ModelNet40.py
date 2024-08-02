@@ -44,7 +44,7 @@ class ModelNet40(data.Dataset):
             face = data['faces']
             neighbor_index = data['neighbors']
         else:
-            face, neighbor_index = process_mesh(self.data[i], self.max_faces)
+            face, neighbor_index = process_mesh(path, self.max_faces)
             if face is None:
                 return self.__getitem__(0)
 
