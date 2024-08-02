@@ -44,7 +44,7 @@ class ModelNet40(data.Dataset):
             face = data['faces']
             neighbor_index = data['neighbors']
         else:
-            face, neighbor_index = process_mesh(path, self.max_faces)
+            face, neighbor_index = process_mesh(self.data[i], self.max_faces)
             if face is None:
                 return self.__getitem__(0)
 
@@ -93,7 +93,7 @@ def process_mesh(path, max_faces):
     vertices = mesh.vertex_matrix()
     faces = mesh.face_matrix()
 
-    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
