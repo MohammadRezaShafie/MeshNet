@@ -29,7 +29,7 @@ torch.cuda.manual_seed_all(seed)
 
 # dataset
 data_set = {
-    x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
+    x: ModelNet40_modified(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
 }
 data_loader = {
     x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], shuffle=True)
