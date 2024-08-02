@@ -4,14 +4,14 @@ import torch
 import torch.utils.data as data
 import pymeshlab
 from data.preprocess import find_neighbor
+from sklearn.model_selection import train_test_split
 
 type_to_index_map = {
     'Infeasible_Designs': 0, 'Feasible_Designs': 1}
 
-
 class ModelNet40(data.Dataset):
 
-    def __init__(self, cfg, part='train'):
+    def __init__(self, cfg, part='train', split_ratio=0.8):
         self.root = cfg['data_root']
         self.max_faces = cfg['max_faces']
         self.part = part
@@ -27,9 +27,15 @@ class ModelNet40(data.Dataset):
             type_index = type_to_index_map[type]
             type_root = os.path.join(self.root, type)
             for filename in os.listdir(type_root):
-                if filename.endswith('.npz') or filename.endswith('.obj'):
+                if filename.endswith('.npz') or filename.endswith('.stl'):
                     self.data.append((os.path.join(type_root, filename), type_index))
 
+        train_data, test_data = train_test_split(self.data, test_size=(1 - split_ratio), stratify=[d[1] for d in self.data])
+
+        if self.part == 'train':
+            self.data = train_data
+        else:
+            self.data = test_data
 
     def __getitem__(self, i):
         path, type = self.data[i]
@@ -63,7 +69,7 @@ class ModelNet40(data.Dataset):
         # to tensor
         face = torch.from_numpy(face).float()
         neighbor_index = torch.from_numpy(neighbor_index).long()
-        target = torch.tensor(type, dtype=torch.long)
+        target = torch.tensor(type, dtype=torch.float)
 
         # reorganize
         face = face.permute(1, 0).contiguous()
@@ -75,26 +81,19 @@ class ModelNet40(data.Dataset):
     def __len__(self):
         return len(self.data)
 
-
 def process_mesh(path, max_faces):
-
-    print(path)
     ms = pymeshlab.MeshSet()
     ms.clear()
 
     # load mesh
     ms.load_new_mesh(path)
     mesh = ms.current_mesh()
-    
-    # # clean up
-    # mesh, _ = pymesh.remove_isolated_vertices(mesh)
-    # mesh, _ = pymesh.remove_duplicated_vertices(mesh)
 
     # get elements
     vertices = mesh.vertex_matrix()
     faces = mesh.face_matrix()
 
-    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
@@ -139,11 +138,7 @@ def process_mesh(path, max_faces):
 
     centers = np.array(centers)
     corners = np.array(corners)
-    print(f"centers shape: {centers.shape}")
-    print(f"corners shape: {corners.shape}")
-    print(f"face_normal shape: {face_normal.shape}")
     faces = np.concatenate([centers, corners, face_normal], axis=1)
-    print(f"faces: {faces.shape}")
     neighbors = np.array(neighbors)
 
     return faces, neighbors

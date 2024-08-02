@@ -26,11 +26,16 @@ def test_model(model):
 
     with torch.no_grad():
         for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader):
-            centers = centers
-            corners = corners
-            normals = normals
-            neighbor_index = neighbor_index
-            targets = targets
+            # centers = centers
+            # corners = corners
+            # normals = normals
+            # neighbor_index = neighbor_index
+            # targets = targets
+            centers = centers.cuda()
+            corners = corners.cuda()
+            normals = normals.cuda()
+            neighbor_index = neighbor_index.cuda()
+            targets = targets.cuda()
 
             targets = targets.view(-1, 1)
 
@@ -65,7 +70,9 @@ def test_model(model):
 if __name__ == '__main__':
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load(cfg['load_model'], map_location=torch.device('cpu')))
+    model.cuda()
+    model.load_state_dict(torch.load(cfg['load_model']))
+    # model.load_state_dict(torch.load(cfg['load_model'], map_location=torch.device('cpu')))
     model.eval()
 
     test_model(model)

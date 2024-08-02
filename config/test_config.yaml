@@ -3,12 +3,12 @@ cuda_devices: '0'
 
 # dataset
 dataset:
-  data_root: '/content/content/simplified_data_voxel_size_4'
+  data_root: '/content/simplified_data_voxel_size_10_npz'
   augment_data: false
   max_faces: 8300
 
 # model
-load_model: '/content/drive/MyDrive/MeshNet_weights.pkl'
+load_model: '/content/drive/MyDrive/MeshNet_best.pkl'
 
 # MeshNet
 MeshNet:

@@ -27,7 +27,7 @@ class ModelNet40(data.Dataset):
             type_index = type_to_index_map[type]
             type_root = os.path.join(os.path.join(self.root, type), part)
             for filename in os.listdir(type_root):
-                if filename.endswith('.npz') or filename.endswith('.obj'):
+                if filename.endswith('.npz') or filename.endswith('.stl'):
                     self.data.append((os.path.join(type_root, filename), type_index))
 
     def __getitem__(self, i):
