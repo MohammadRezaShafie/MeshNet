@@ -147,8 +147,8 @@ if __name__ == '__main__':
 
     # criterion = nn.CrossEntropyLoss()
     # criterion = nn.BCEWithLogitsLoss()
-    neg_weight = 0.6
-    pos_weight = 0.4
+    neg_weight = 0.4
+    pos_weight = 0.6
     class_weights = torch.tensor([pos_weight]).cuda()
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights)
 
