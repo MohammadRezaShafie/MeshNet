@@ -10,7 +10,7 @@ import torch.backends.cudnn as cudnn
 import math
 import numpy as np
 from config import get_train_config
-from data import ModelNet40_modified
+from data import ModelNet40
 from models import MeshNet
 from utils.retrival import append_feature, calculate_map
 
@@ -29,7 +29,7 @@ torch.cuda.manual_seed_all(seed)
 
 # dataset
 data_set = {
-    x: ModelNet40_modified(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
+    x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
 }
 data_loader = {
     x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], shuffle=True)
