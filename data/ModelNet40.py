@@ -93,6 +93,13 @@ def process_mesh(path, max_faces):
     mesh.remove_non_manifold_edges()
     mesh.remove_degenerate_triangles()
 
+    
+    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 10
+
+    mesh = mesh.simplify_vertex_clustering(
+        voxel_size=voxel_size,
+        contraction=o3d.geometry.SimplificationContraction.Average)
+
     # Get elements
     vertices = np.asarray(mesh.vertices)
     faces = np.asarray(mesh.triangles)
