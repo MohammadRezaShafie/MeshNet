@@ -32,7 +32,7 @@ class ModelNet40(data.Dataset):
                 if filename.endswith('.npz') or filename.endswith('.stl'):
                     self.data.append((os.path.join(type_root, filename), type_index))
 
-        train_data, test_data = train_test_split(self.data, test_size=(1 - split_ratio), stratify=[d[1] for d in self.data])
+        train_data, test_data = train_test_split(self.data, test_size=(1 - split_ratio), stratify=[d[1] for d in self.data],random_state=42)
 
         if self.part == 'train':
             self.data = train_data
