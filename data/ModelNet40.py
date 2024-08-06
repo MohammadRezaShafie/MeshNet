@@ -81,10 +81,10 @@ def process_mesh(path, max_faces):
     mesh = o3d.io.read_triangle_mesh(path)
     
     # Clean up
-    mesh.remove_duplicated_vertices()
-    mesh.remove_duplicated_triangles()
-    mesh.remove_non_manifold_edges()
-    mesh.remove_degenerate_triangles()
+    # mesh.remove_duplicated_vertices()
+    # mesh.remove_duplicated_triangles()
+    # mesh.remove_non_manifold_edges()
+    # mesh.remove_degenerate_triangles()
 
     # Get elements
     vertices = np.asarray(mesh.vertices)
