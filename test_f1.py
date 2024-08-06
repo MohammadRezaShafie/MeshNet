@@ -41,7 +41,6 @@ def test_model(model):
 
             outputs, feas = model(centers, corners, normals, neighbor_index)
             preds = (torch.sigmoid(outputs) > 0.5).float()
-            
             correct_num += (preds == targets).float().sum()
 
             # Collect all predictions and targets for F1 score calculation

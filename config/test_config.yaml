@@ -3,12 +3,12 @@ cuda_devices: '0'
 
 # dataset
 dataset:
-  data_root: '/content/simplified_data_voxel_size_10_npz'
+  data_root: '/kaggle/input/manufacturing/Manufacturing_data/INFORMS_QSR_Challenge_training_data'
   augment_data: false
   max_faces: 8300
 
 # model
-load_model: '/content/drive/MyDrive/MeshNet_best.pkl'
+load_model: '/kaggle/input/meshnet/pytorch/default/1/MeshNet_best.pkl'
 
 # MeshNet
 MeshNet:
@@ -22,5 +22,5 @@ MeshNet:
   num_classes: 2
 
 # test config
-batch_size: 64
+batch_size: 4
 retrieval_on: true
