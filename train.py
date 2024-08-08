@@ -77,7 +77,8 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
                     running_corrects += torch.sum(preds == targets.data)
                     all_preds.append(preds.cpu().numpy())
                     all_targets.append(targets.cpu().numpy())
-
+            print(f'{len(loader.dataset)=}')
+            print(f'{running_loss=}')
             epoch_loss = running_loss / len(loader.dataset)
             epoch_acc = running_corrects.double() / len(loader.dataset)
             all_preds = np.concatenate(all_preds)
