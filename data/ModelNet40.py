@@ -94,7 +94,7 @@ def process_mesh(path, max_faces):
     # mesh.remove_degenerate_triangles()
 
     
-    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 10
+    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 12
 
     mesh = mesh.simplify_vertex_clustering(
         voxel_size=voxel_size,
