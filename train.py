@@ -72,7 +72,8 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
                         optimizer.zero_grad()
                         loss.backward()
                         optimizer.step()
-
+                    print(f'{loss.item()=}')
+                    print(f'{centers.size(0)=}')
                     running_loss += loss.item() * centers.size(0)
                     running_corrects += torch.sum(preds == targets.data)
                     all_preds.append(preds.cpu().numpy())
