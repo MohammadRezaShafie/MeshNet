@@ -42,8 +42,6 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
     best_acc = 0.0
     best_f1 = 0.0
     best_map = 0.0
-    all_preds = []
-    all_targets = []
     best_model_wts_acc = copy.deepcopy(model.state_dict())
     best_model_wts_f1 = copy.deepcopy(model.state_dict())
 
@@ -63,6 +61,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
             running_loss = 0.0
             running_corrects = 0
+            all_preds = []
+            all_targets = []
             ft_all, lbl_all = None, None
 
             for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader[phrase]):
