@@ -95,6 +95,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                     all_preds.append(preds.cpu().numpy())
                     all_targets.append(targets.cpu().numpy())
 
+                torch.cuda.empty_cache()
+
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
             all_preds = np.concatenate(all_preds)
