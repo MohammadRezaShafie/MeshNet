@@ -88,13 +88,13 @@ def process_mesh(path, max_faces):
     mesh = o3d.io.read_triangle_mesh(path)
     
     # Clean up
-    # mesh.remove_duplicated_vertices()
-    # mesh.remove_duplicated_triangles()
-    # mesh.remove_non_manifold_edges()
-    # mesh.remove_degenerate_triangles()
+    mesh.remove_duplicated_vertices()
+    mesh.remove_duplicated_triangles()
+    mesh.remove_non_manifold_edges()
+    mesh.remove_degenerate_triangles()
 
     
-    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 12
+    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 10
 
     mesh = mesh.simplify_vertex_clustering(
         voxel_size=voxel_size,
