@@ -13,7 +13,7 @@ from config import get_train_config
 from data import ModelNet40
 from models import MeshNet
 from utils.retrival import append_feature, calculate_map
-
+from sklearn.metrics import f1_score
 
 cfg = get_train_config()
 os.environ['CUDA_VISIBLE_DEVICES'] = cfg['cuda_devices']
@@ -40,11 +40,12 @@ data_loader = {
 def train_model(model, criterion, optimizer, scheduler, cfg):
 
     best_acc = 0.0
+    best_f1 = 0.0
     best_map = 0.0
     all_preds = []
     all_targets = []
-    correct_num = 0
-    best_model_wts = copy.deepcopy(model.state_dict())
+    best_model_wts_acc = copy.deepcopy(model.state_dict())
+    best_model_wts_f1 = copy.deepcopy(model.state_dict())
 
     for epoch in range(1, cfg['max_epoch']):
 
@@ -91,19 +92,27 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
                     running_loss += loss.item() * centers.size(0)
                     running_corrects += torch.sum(preds == targets.data)
+                    all_preds.append(preds.cpu().numpy())
+                    all_targets.append(targets.cpu().numpy())
 
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
+            all_preds = np.concatenate(all_preds)
+            all_targets = np.concatenate(all_targets)
+            epoch_f1 = f1_score(all_targets, all_preds)
 
             if phrase == 'train':
-                print('{} Loss: {:.4f} Acc: {:.4f}'.format(phrase, epoch_loss, epoch_acc))
+                print('{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f}'.format(phrase, epoch_loss, epoch_acc, epoch_f1))
                 scheduler.step()
 
             if phrase == 'test':
                 if epoch_acc > best_acc:
                     best_acc = epoch_acc
-                    best_model_wts = copy.deepcopy(model.state_dict())
-                print_info = '{} Loss: {:.4f} Acc: {:.4f} (best {:.4f})'.format(phrase, epoch_loss, epoch_acc, best_acc)
+                    best_model_wts_acc = copy.deepcopy(model.state_dict())
+                if epoch_f1 > best_f1:
+                    best_f1 = epoch_f1
+                    best_model_wts_f1 = copy.deepcopy(model.state_dict())
+                print_info = '{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f} (best_acc {:.4f}) (best_f1 {:.4f})'.format(phrase, epoch_loss, epoch_acc, epoch_f1, best_acc, best_f1)
 
                 if cfg['retrieval_on']:
                     epoch_map = calculate_map(ft_all, lbl_all)
@@ -113,13 +122,13 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 
                 if epoch % cfg['save_steps'] == 0:
                     torch.save(copy.deepcopy(model.state_dict()), os.path.join(cfg['ckpt_root'], '{}.pkl'.format(epoch)))
-                
+
                 print(print_info)
 
     print('Best val acc: {:.4f}'.format(best_acc))
     print('Config: {}'.format(cfg))
 
-    return best_model_wts
+    return best_model_wts_acc,best_model_wts_f1
 
 
 if __name__ == '__main__':
@@ -148,5 +157,6 @@ if __name__ == '__main__':
     # start training
     if not os.path.exists(cfg['ckpt_root']):
         os.mkdir(cfg['ckpt_root'])
-    best_model_wts = train_model(model, criterion, optimizer, scheduler, cfg)
-    torch.save(best_model_wts, os.path.join(cfg['ckpt_root'], 'MeshNet_best.pkl'))
+    best_model_wts_acc, best_model_wts_f1 = train_model(model, criterion, optimizer, scheduler, cfg)
+    torch.save(best_model_wts_acc, os.path.join(cfg['ckpt_root'], 'MeshNet_best_acc.pkl'))
+    torch.save(best_model_wts_f1, os.path.join(cfg['ckpt_root'], 'MeshNet_best_f1.pkl'))

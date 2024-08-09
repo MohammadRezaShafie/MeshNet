@@ -4,7 +4,7 @@ cuda_devices: '0,1'   # multi-gpu training is available
 # dataset
 dataset:
   data_root: '/kaggle/input/manufacturing-dataset/INFORMS_QSR_Challenge_training_data'
-  max_faces: 10000
+  max_faces: 9000
   augment_data: true
   jitter_sigma: 0.01
   jitter_clip: 0.05
@@ -25,7 +25,7 @@ MeshNet:
 
 # train
 seed: 0
-lr: 0.005
+lr: 0.006
 momentum: 0.9
 weight_decay: 0.0005
 batch_size: 4
