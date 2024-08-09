@@ -5,7 +5,7 @@ cuda_devices: '0,1'   # multi-gpu training is available
 dataset:
   data_root: '/kaggle/input/manufacturing/Manufacturing_data/INFORMS_QSR_Challenge_training_data'
   max_faces: 10000
-  augment_data: True
+  augment_data: False
   jitter_sigma: 0.01
   jitter_clip: 0.05
 
