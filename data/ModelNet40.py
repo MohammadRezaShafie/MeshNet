@@ -3,17 +3,15 @@ import os
 import torch
 import torch.utils.data as data
 import pymeshlab
-import open3d as o3d
-import numpy as np
 from data.preprocess import find_neighbor
-from sklearn.model_selection import train_test_split
 
 type_to_index_map = {
     'Infeasible_Designs': 0, 'Feasible_Designs': 1}
 
+
 class ModelNet40(data.Dataset):
 
-    def __init__(self, cfg, part='train', split_ratio=0.8):
+    def __init__(self, cfg, part='train'):
         self.root = cfg['data_root']
         self.max_faces = cfg['max_faces']
         self.part = part
@@ -27,17 +25,10 @@ class ModelNet40(data.Dataset):
             if type not in type_to_index_map.keys():
                 continue
             type_index = type_to_index_map[type]
-            type_root = os.path.join(self.root, type)
+            type_root = os.path.join(os.path.join(self.root, type), part)
             for filename in os.listdir(type_root):
-                if filename.endswith('.npz') or filename.endswith('.stl'):
+                if filename.endswith('.npz') or filename.endswith('.obj'):
                     self.data.append((os.path.join(type_root, filename), type_index))
-
-        train_data, test_data = train_test_split(self.data, test_size=(1 - split_ratio), stratify=[d[1] for d in self.data],random_state=42)
-
-        if self.part == 'train':
-            self.data = train_data
-        else:
-            self.data = test_data
 
     def __getitem__(self, i):
         path, type = self.data[i]
@@ -83,51 +74,49 @@ class ModelNet40(data.Dataset):
     def __len__(self):
         return len(self.data)
 
+
 def process_mesh(path, max_faces):
-    # Load mesh
-    mesh = o3d.io.read_triangle_mesh(path)
+    ms = pymeshlab.MeshSet()
+    ms.clear()
+
+    # load mesh
+    ms.load_new_mesh(path)
+    mesh = ms.current_mesh()
     
-    # Clean up
-    # mesh.remove_duplicated_vertices()
-    # mesh.remove_duplicated_triangles()
-    # mesh.remove_non_manifold_edges()
-    # mesh.remove_degenerate_triangles()
+    # # clean up
+    # mesh, _ = pymesh.remove_isolated_vertices(mesh)
+    # mesh, _ = pymesh.remove_duplicated_vertices(mesh)
 
-    
-    voxel_size = max(mesh.get_max_bound() - mesh.get_min_bound()) / 12
+    # get elements
+    vertices = mesh.vertex_matrix()
+    faces = mesh.face_matrix()
 
-    mesh = mesh.simplify_vertex_clustering(
-        voxel_size=voxel_size,
-        contraction=o3d.geometry.SimplificationContraction.Average)
-
-    # Get elements
-    vertices = np.asarray(mesh.vertices)
-    faces = np.asarray(mesh.triangles)
-
-    if faces.shape[0] >= max_faces:     # only occur once in train set of Manifold40
+    if faces.shape[0] != max_faces:     # only occur once in train set of Manifold40
         print("Model with more than {} faces ({}): {}".format(max_faces, faces.shape[0], path))
         return None, None
 
-    # Move to center
+    # move to center
     center = (np.max(vertices, 0) + np.min(vertices, 0)) / 2
     vertices -= center
 
-    # Normalize
-    max_len = np.max(np.sum(vertices**2, axis=1))
+    # normalize
+    max_len = np.max(vertices[:, 0]**2 + vertices[:, 1]**2 + vertices[:, 2]**2)
     vertices /= np.sqrt(max_len)
 
-    # Get normal vector
-    mesh.vertices = o3d.utility.Vector3dVector(vertices)
-    mesh.triangles = o3d.utility.Vector3iVector(faces)
-    mesh.compute_triangle_normals()
-    face_normals = np.asarray(mesh.triangle_normals)
+    # get normal vector
+    ms.clear()
+    mesh = pymeshlab.Mesh(vertices, faces)
+    ms.add_mesh(mesh)
+    face_normal = ms.current_mesh().face_normal_matrix()
 
-    # Get neighbors
-    faces_contain_this_vertex = [set() for _ in range(len(vertices))]
+    # get neighbors
+    faces_contain_this_vertex = []
+    for i in range(len(vertices)):
+        faces_contain_this_vertex.append(set([]))
     centers = []
     corners = []
-    for i, face in enumerate(faces):
-        v1, v2, v3 = face
+    for i in range(len(faces)):
+        [v1, v2, v3] = faces[i]
         x1, y1, z1 = vertices[v1]
         x2, y2, z2 = vertices[v2]
         x3, y3, z3 = vertices[v3]
@@ -138,8 +127,8 @@ def process_mesh(path, max_faces):
         faces_contain_this_vertex[v3].add(i)
 
     neighbors = []
-    for i, face in enumerate(faces):
-        v1, v2, v3 = face
+    for i in range(len(faces)):
+        [v1, v2, v3] = faces[i]
         n1 = find_neighbor(faces, faces_contain_this_vertex, v1, v2, i)
         n2 = find_neighbor(faces, faces_contain_this_vertex, v2, v3, i)
         n3 = find_neighbor(faces, faces_contain_this_vertex, v3, v1, i)
@@ -147,7 +136,7 @@ def process_mesh(path, max_faces):
 
     centers = np.array(centers)
     corners = np.array(corners)
-    faces_combined = np.concatenate([centers, corners, face_normals], axis=1)
+    faces = np.concatenate([centers, corners, face_normal], axis=1)
     neighbors = np.array(neighbors)
 
-    return faces_combined, neighbors
+    return faces, neighbors
