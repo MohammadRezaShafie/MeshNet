@@ -92,8 +92,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
                     running_loss += loss.item() * centers.size(0)
                     running_corrects += torch.sum(preds == targets.data)
-                    all_preds.append(preds.cpu().numpy())
-                    all_targets.append(targets.cpu().numpy())
+                    all_preds.append(preds.numpy())
+                    all_targets.append(targets.numpy())
 
             epoch_loss = running_loss / len(data_set[phrase])
             epoch_acc = running_corrects.double() / len(data_set[phrase])
