@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models import SpatialDescriptor, StructuralDescriptor, MeshConvolution, SelfAttention
+from models import SpatialDescriptor, SelfAttention, StructuralDescriptor, MeshConvolution
 
 
 class MeshNet(nn.Module):
