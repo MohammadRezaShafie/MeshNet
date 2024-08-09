@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models import SpatialDescriptor, StructuralDescriptor, MeshConvolution
+from models import SpatialDescriptor, StructuralDescriptor, MeshConvolution, SelfAttention
 
 
 class MeshNet(nn.Module):
@@ -18,6 +18,7 @@ class MeshNet(nn.Module):
             nn.BatchNorm1d(1024),
             nn.ReLU(),
         )
+        self.self_attention = SelfAttention(1024)  # Add attention here
         self.concat_mlp = nn.Sequential(
             nn.Conv1d(1792, 1024, 1),
             nn.BatchNorm1d(1024),
@@ -42,7 +43,10 @@ class MeshNet(nn.Module):
         spatial_fea2, structural_fea2 = self.mesh_conv2(spatial_fea1, structural_fea1, neighbor_index)
         spatial_fea3 = self.fusion_mlp(torch.cat([spatial_fea2, structural_fea2], 1))
 
-        fea = self.concat_mlp(torch.cat([spatial_fea1, spatial_fea2, spatial_fea3], 1)) # b, c, n
+        # Apply attention after fusion
+        spatial_fea3 = self.self_attention(spatial_fea3)
+
+        fea = self.concat_mlp(torch.cat([spatial_fea1, spatial_fea2, spatial_fea3], 1))  # b, c, n
         if self.training:
             fea = fea[:, :, torch.randperm(fea.size(2))[:int(fea.size(2) * (1 - self.mask_ratio))]]
         fea = torch.max(fea, dim=2)[0]

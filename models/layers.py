@@ -174,3 +174,24 @@ class MeshConvolution(nn.Module):
         structural_fea = self.aggregation_mlp(structural_fea)
 
         return spatial_fea, structural_fea
+
+class SelfAttention(nn.Module):
+    def __init__(self, in_dim):
+        super(SelfAttention, self).__init__()
+        self.query_conv = nn.Conv1d(in_dim, in_dim // 8, 1)
+        self.key_conv = nn.Conv1d(in_dim, in_dim // 8, 1)
+        self.value_conv = nn.Conv1d(in_dim, in_dim, 1)
+        self.gamma = nn.Parameter(torch.zeros(1))
+
+    def forward(self, x):
+        batch_size, C, width = x.size()
+        query = self.query_conv(x).view(batch_size, -1, width).permute(0, 2, 1)
+        key = self.key_conv(x).view(batch_size, -1, width)
+        energy = torch.bmm(query, key)
+        attention = F.softmax(energy, dim=-1)
+        value = self.value_conv(x).view(batch_size, -1, width)
+        out = torch.bmm(value, attention.permute(0, 2, 1))
+        out = out.view(batch_size, C, width)
+        out = self.gamma * out + x
+        return out
+
