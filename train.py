@@ -136,6 +136,7 @@ if __name__ == '__main__':
     # prepare model
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
     model.cuda()
+    model.load_state_dict(torch.load('/kaggle/input/meshnet/pytorch/default/2/120.pkl'))
     model = nn.DataParallel(model)
 
     # criterion
