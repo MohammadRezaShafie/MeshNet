@@ -3,7 +3,7 @@ cuda_devices: '0,1'   # multi-gpu training is available
 
 # dataset
 dataset:
-  data_root: '/kaggle/input/manufacturing-dataset/INFORMS_QSR_Challenge_training_data'
+  data_root: '/kaggle/input/manufacturing/Manufacturing_data/INFORMS_QSR_Challenge_training_data'
   max_faces: 8500
   augment_data: true
   jitter_sigma: 0.01
@@ -29,7 +29,7 @@ lr: 0.006
 momentum: 0.9
 weight_decay: 0.0005
 batch_size: 16
-max_epoch: 200
+max_epoch: 100
 optimizer: 'sgd' # sgd/adamw
 scheduler: 'cos' # step/cos
 milestones: [30, 60, 90]
