@@ -28,13 +28,17 @@ torch.cuda.manual_seed(seed)
 torch.cuda.manual_seed_all(seed) 
 
 # dataset
-data_set = {
-    x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
-}
-data_loader = {
-    x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], shuffle=True)
-    for x in ['train', 'test']
-}
+# data_set = {
+#     x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
+# }
+data_set = ModelNet40(cfg=cfg['dataset']) 
+
+# data_loader = {
+#     x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], shuffle=True)
+#     for x in ['train', 'test']
+# }
+
+data_loader = data.DataLoader(data_set, batch_size=cfg['batch_size'], shuffle=True)
 
 
 def train_model(model, criterion, optimizer, scheduler, cfg):
@@ -52,78 +56,78 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
         print('-' * 60)
 
         # adjust_learning_rate(cfg, epoch, optimizer)
-        for phrase in ['train', 'test']:
+        # for phrase in ['train', 'test']:
 
-            if phrase == 'train':
-                model.train()
-            else:
-                model.eval()
+        # if phrase == 'train':
+        #     model.train()
+        # else:
+        #     model.eval()
 
-            running_loss = 0.0
-            running_corrects = 0
-            all_preds = []
-            all_targets = []
-            ft_all, lbl_all = None, None
+        running_loss = 0.0
+        running_corrects = 0
+        all_preds = []
+        all_targets = []
+        ft_all, lbl_all = None, None
 
-            for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader[phrase]):
-                centers = centers.cuda()
-                corners = corners.cuda()
-                normals = normals.cuda()
-                neighbor_index = neighbor_index.cuda()
-                targets = targets.cuda()
+        for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader):
+            centers = centers.cuda()
+            corners = corners.cuda()
+            normals = normals.cuda()
+            neighbor_index = neighbor_index.cuda()
+            targets = targets.cuda()
 
-                targets = targets.view(-1, 1)
+            targets = targets.view(-1, 1)
 
-                with torch.set_grad_enabled(phrase == 'train'):
-                    outputs, feas = model(centers, corners, normals, neighbor_index)
-                    _, preds = torch.max(outputs, 1)
+            with torch.set_grad_enabled():
+                outputs, feas = model(centers, corners, normals, neighbor_index)
+                _, preds = torch.max(outputs, 1)
 
-                    preds = (torch.sigmoid(outputs) > 0.5).float()
-                    loss = criterion(outputs, targets)
-                    
-                    if phrase == 'train':
-                        optimizer.zero_grad()
-                        loss.backward()
-                        optimizer.step()
-
-                    if phrase == 'test' and cfg['retrieval_on']:
-                        ft_all = append_feature(ft_all, feas.detach().cpu())
-                        lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
-
-                    running_loss += loss.item() * centers.size(0)
-                    running_corrects += torch.sum(preds == targets.data)
-                    all_preds.append(preds.cpu().numpy())
-                    all_targets.append(targets.cpu().numpy())
-
-            epoch_loss = running_loss / len(data_set[phrase])
-            epoch_acc = running_corrects.double() / len(data_set[phrase])
-            all_preds = np.concatenate(all_preds)
-            all_targets = np.concatenate(all_targets)
-            epoch_f1 = f1_score(all_targets, all_preds)
-
-            if phrase == 'train':
-                print('{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f}'.format(phrase, epoch_loss, epoch_acc, epoch_f1))
-                scheduler.step()
-
-            if phrase == 'test':
-                if epoch_acc > best_acc:
-                    best_acc = epoch_acc
-                    best_model_wts_acc = copy.deepcopy(model.state_dict())
-                if epoch_f1 > best_f1:
-                    best_f1 = epoch_f1
-                    best_model_wts_f1 = copy.deepcopy(model.state_dict())
-                print_info = '{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f} (best_acc {:.4f}) (best_f1 {:.4f})'.format(phrase, epoch_loss, epoch_acc, epoch_f1, best_acc, best_f1)
-
-                if cfg['retrieval_on']:
-                    epoch_map = calculate_map(ft_all, lbl_all)
-                    if epoch_map > best_map:
-                        best_map = epoch_map
-                    print_info += ' mAP: {:.4f}'.format(epoch_map)
+                preds = (torch.sigmoid(outputs) > 0.5).float()
+                loss = criterion(outputs, targets)
                 
-                if epoch % cfg['save_steps'] == 0:
-                    torch.save(copy.deepcopy(model.state_dict()), os.path.join(cfg['ckpt_root'], '{}.pkl'.format(epoch)))
+                # if phrase == 'train':
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
-                print(print_info)
+                # if phrase == 'test' and cfg['retrieval_on']:
+                #     ft_all = append_feature(ft_all, feas.detach().cpu())
+                #     lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
+
+                running_loss += loss.item() * centers.size(0)
+                running_corrects += torch.sum(preds == targets.data)
+                all_preds.append(preds.cpu().numpy())
+                all_targets.append(targets.cpu().numpy())
+
+        epoch_loss = running_loss / len(data_set)
+        epoch_acc = running_corrects.double() / len(data_set)
+        all_preds = np.concatenate(all_preds)
+        all_targets = np.concatenate(all_targets)
+        epoch_f1 = f1_score(all_targets, all_preds)
+
+        # if phrase == 'train':
+        print('Train Loss: {:.4f} Acc: {:.4f} F1: {:.4f}'.format(epoch_loss, epoch_acc, epoch_f1))
+        scheduler.step()
+
+        # if phrase == 'test':
+        if epoch_acc > best_acc:
+            best_acc = epoch_acc
+            best_model_wts_acc = copy.deepcopy(model.state_dict())
+        if epoch_f1 > best_f1:
+            best_f1 = epoch_f1
+            best_model_wts_f1 = copy.deepcopy(model.state_dict())
+        print_info = '{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f} (best_acc {:.4f}) (best_f1 {:.4f})'.format(phrase, epoch_loss, epoch_acc, epoch_f1, best_acc, best_f1)
+
+        if cfg['retrieval_on']:
+            epoch_map = calculate_map(ft_all, lbl_all)
+            if epoch_map > best_map:
+                best_map = epoch_map
+            print_info += ' mAP: {:.4f}'.format(epoch_map)
+        
+        if epoch % cfg['save_steps'] == 0:
+            torch.save(copy.deepcopy(model.state_dict()), os.path.join(cfg['ckpt_root'], '{}.pkl'.format(epoch)))
+
+        print(print_info)
 
     print('Best val acc: {:.4f}'.format(best_acc))
     print('Config: {}'.format(cfg))
