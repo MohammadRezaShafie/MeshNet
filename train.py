@@ -78,7 +78,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
 
             targets = targets.view(-1, 1)
 
-            with torch.set_grad_enabled():
+            with torch.set_grad_enabled(True):
                 outputs, feas = model(centers, corners, normals, neighbor_index)
                 _, preds = torch.max(outputs, 1)
 
