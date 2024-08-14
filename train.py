@@ -116,7 +116,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
         if epoch_f1 > best_f1:
             best_f1 = epoch_f1
             best_model_wts_f1 = copy.deepcopy(model.state_dict())
-        print_info = '{} Loss: {:.4f} Acc: {:.4f} F1: {:.4f} (best_acc {:.4f}) (best_f1 {:.4f})'.format(phrase, epoch_loss, epoch_acc, epoch_f1, best_acc, best_f1)
+        print_info = 'Best Info Loss: {:.4f} Acc: {:.4f} F1: {:.4f} (best_acc {:.4f}) (best_f1 {:.4f})'.format(epoch_loss, epoch_acc, epoch_f1, best_acc, best_f1)
 
         if cfg['retrieval_on']:
             epoch_map = calculate_map(ft_all, lbl_all)
