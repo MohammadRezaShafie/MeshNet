@@ -141,7 +141,7 @@ if __name__ == '__main__':
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
     model.cuda()
     model = nn.DataParallel(model)
-    # model.load_state_dict(torch.load('/kaggle/input/meshnet/pytorch/default/2/120.pkl'))
+    model.load_state_dict(torch.load('/kaggle/input/meshnet/pytorch/final/1/100.pkl'))
 
     # criterion
     # criterion = nn.CrossEntropyLoss()
@@ -163,5 +163,5 @@ if __name__ == '__main__':
     if not os.path.exists(cfg['ckpt_root']):
         os.mkdir(cfg['ckpt_root'])
     best_model_wts_acc, best_model_wts_f1 = train_model(model, criterion, optimizer, scheduler, cfg)
-    torch.save(best_model_wts_acc, os.path.join(cfg['ckpt_root'], 'MeshNet_best_acc.pkl'))
-    torch.save(best_model_wts_f1, os.path.join(cfg['ckpt_root'], 'MeshNet_best_f1.pkl'))
+    torch.save(best_model_wts_acc, os.path.join(cfg['ckpt_root'], 'Final_MeshNet_best_acc.pkl'))
+    torch.save(best_model_wts_f1, os.path.join(cfg['ckpt_root'], 'Final_MeshNet_best_f1.pkl'))
