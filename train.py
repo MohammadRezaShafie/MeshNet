@@ -141,7 +141,7 @@ if __name__ == '__main__':
     model = MeshNet(cfg=cfg['MeshNet'], require_fea=True)
     model.cuda()
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load('/kaggle/input/meshnet/pytorch/final/1/100.pkl'))
+    model.load_state_dict(torch.load('/kaggle/input/meshnet/pytorch/final/2/100.pkl'))
 
     # criterion
     # criterion = nn.CrossEntropyLoss()
