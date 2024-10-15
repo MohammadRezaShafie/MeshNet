@@ -8,7 +8,7 @@ from config import get_test_config
 from data import ModelNet40
 from models import MeshNet
 from utils.retrival import append_feature, calculate_map
-
+import time
 
 cfg = get_test_config()
 os.environ['CUDA_VISIBLE_DEVICES'] = cfg['cuda_devices']
@@ -26,6 +26,7 @@ def test_model(model):
     with torch.no_grad():
         
         for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader):
+            a = time.time()
             # centers = centers.cuda()
             # corners = corners.cuda()
             # normals = normals.cuda()
@@ -46,7 +47,7 @@ def test_model(model):
             preds = (torch.sigmoid(outputs) > 0.5).float()
             
             correct_num += (preds == targets).float().sum()
-
+            print((time.time())-a)
             if cfg['retrieval_on']:
                 ft_all = append_feature(ft_all, feas.detach().cpu())
                 lbl_all = append_feature(lbl_all, targets.detach().cpu(), flaten=True)
