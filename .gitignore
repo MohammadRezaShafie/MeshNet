@@ -1,5 +1,6 @@
 .idea/
 ckpt_root/
 dataset/
+*.zip
 *.pkl
 */__pycache__/
